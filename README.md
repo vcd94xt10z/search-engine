@@ -3,19 +3,14 @@
 Sistema de busca em NodeJS
 
 ## Serviços
-
 POST /update/ Atualiza os dados usados na busca
-
 GET /search/ Executa uma busca nos dados e retorna o resultado
 
 ## Exemplos
 
 Request
-
 POST /update/
-
-RequestBody
-
+Body
 ```javascript
 [
 	{
@@ -62,20 +57,16 @@ RequestBody
 ```
 
 Response
-
 Status: 200
-
-Response Body: none
+Body: none
 
 Request
-
 GET /search/?q=Termo de Busca&sortField=price&sortType=desc
-
-RequestBody: none
+Body: none
 
 Response
-
 Status: 200
+Body
 
 ```javascript
 [
