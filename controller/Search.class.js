@@ -13,17 +13,29 @@ Search.search = function(all){
 	let output = [];
 	
 	// input
-	let q         = all.req.query.q;
-	let limit     = all.req.query.limit;
-	let page      = all.req.query.page;
-	let sortField = all.req.query.sortField;
-	let sortType  = all.req.query.sortType;
+	let q         = all.req.query.q.toLowerCase();
+	let limit     = parseInt(all.req.query.limit);
+	let page      = parseInt(all.req.query.page);
+	let sortField = all.req.query.sortField.toLowerCase();
+	let sortType  = all.req.query.sortType.toLowerCase();
 	
 	let qArray = q.split(" ");
 	
 	// validação
 	if(q.length <= 1){
 		throw "Pesquisa muito curta, mínimo 2 caracteres";
+	}
+	
+	if(page <= 0){
+		page = 1;
+	}
+	
+	if(limit <= 0){
+		limit = 4;
+	}
+	
+	if(sortType != "desc"){
+		sortType = "asc";
 	}
 	
 	// filtrando e classificando
@@ -33,7 +45,7 @@ Search.search = function(all){
 		// verificando se algum pedaço esta no produto
 		let find = false;
 		for(let j in qArray){
-			if(data.all.indexOf(qArray[j]) != -1){
+			if(data.all.toLowerCase().indexOf(qArray[j]) != -1){
 				find = true;
 				break;
 			}
@@ -52,7 +64,7 @@ Search.search = function(all){
 		}
 		
 		// no começo do título
-		if(data.name.toLowerCase().indexOf(q.toLowerCase()) == 0){
+		if(data.name.toLowerCase().indexOf(q) == 0){
 			data.relevance2 = 1;
 		}
 		
@@ -64,9 +76,6 @@ Search.search = function(all){
 	let validFields = ["relevance","price","stock","sales_count"];
 	
 	if(validFields.includes(sortField)){
-		if(sortType != "desc"){
-			sortType = "asc";
-		} 
 		eval('sort = {'+sortField+': "'+sortType+'"};');
 	}else{
 		sort = {relevance1: "desc",relevance2: "desc"};	
@@ -74,7 +83,33 @@ Search.search = function(all){
 	
 	output.keySort(sort);
 	
-	return output;
+	// limitando
+	let offset  = ( page - 1) * limit;
+	let index   = 0;
+	let output2 = [];
+	
+	for(let i in output){
+		// verificar porque esta vindo um indice "keySort"
+		if(isNaN(i)){
+			continue;
+		}
+		
+		// começa a adicionar somente quando chegar no offset
+		if(index >= offset){
+			output2.push(output[i]);
+			index++;
+			
+			// limite atingido
+			if(index >= limit){
+				break;
+			}
+		}
+	}
+	
+	console.log("depois");
+	console.log(output2);
+	
+	return output2;
 }
 
 /**

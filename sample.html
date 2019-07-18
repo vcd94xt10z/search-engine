@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>	
+	<title>Exemplo</title>
+	<script>
+	var ajaxRunning = false;
+	
+	function onUpdate(){
+		if(ajaxRunning){
+			return;
+		}
+		ajaxRunning = true;
+
+		var input = $("#data").val();
+		
+		$.ajax({
+			type: 'POST',
+			url: 'http://localhost:3000/update',
+			data: input,
+			contentType: 'application/json; charset=utf-8'
+		}).done(function(data){
+			ajaxRunning	= false;
+			showMessage("Atualizado","S");
+		}).fail(function(xhr){
+			ajaxRunning	= false;
+			showMessage("Erro em atualizar","E");
+		});
+	}
+	
+	function onFilter(){
+		if(ajaxRunning){
+			return;
+		}
+		ajaxRunning = true;
+
+		var q = $("#q").val();
+		var sortField = $("#sortField").val();
+		var sortType = $("#sortType").val();
+		var page = $("#page").val();
+		var limit = $("#limit").val();
+		
+		var args = [];
+		args.push("q="+q);
+		args.push("sortField="+sortField);
+		args.push("sortType="+sortType);
+		args.push("page="+page);
+		args.push("limit="+limit);
+		
+		$.ajax({
+			type: 'GET',
+			url: 'http://localhost:3000/search/?'+args.join("&")
+		}).done(function(resultList){
+			ajaxRunning	= false;
+			
+			let code = "";
+			for(let i in resultList){
+				let item = resultList[i];
+				
+				code += "<tr>";
+					code += "<td>"+item.productid+"</td>";
+					code += "<td>"+item.name+"</td>";
+					code += "<td>"+item.category+"</td>";
+					code += "<td>"+item.brand+"</td>";
+					code += "<td>"+item.keywords+"</td>";
+					code += "<td>"+item.price+"</td>";
+					code += "<td>"+item.stock+"</td>";
+					code += "<td>"+item.sales_count+"</td>";
+				code += "</tr>";
+			}
+			$("#tb1 tbody").html(code);
+			
+			showMessage("Concluído","S");
+		}).fail(function(xhr){
+			ajaxRunning	= false;
+			showMessage("Erro em filtrar: Status "+xhr.status+" "+xhr.responseText,"E");
+		});
+	}
+	
+	function showMessage(message,type){
+		$("#alert-success").html("").css("display","none");
+		$("#alert-error").html("").css("display","none");
+		
+		if(type.toLowerCase() == "s"){
+			$("#alert-success").html(message).css("display","block");
+		}else{
+			$("#alert-error").html(message).css("display","block");
+		}
+	}
+
+	$(document).ready(function(){
+		$("#button-update").click(function(){
+			onUpdate();
+		});
+		
+		$("#button-exec").click(function(){
+			onFilter();
+		});
+		
+		$(".showHideCardBody").click(function(){
+			let self = $(this);
+			let body = self.next();
+			
+			if(body.css("display") == "block"){
+				body.css("display","none");
+			}else{
+				body.css("display","block");
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+	
+	<div class="container">
+		<br>
+		
+		<div id="alert-success" class="alert alert-success" role="alert" style="display:none"></div>
+		<div id="alert-error" class="alert alert-danger" role="alert" style="display:none"></div>
+		
+		<div class="row">
+			<div class="col-12">
+			
+				<div class="card">
+				  <div class="card-header showHideCardBody">
+					Atualização de Dados
+				  </div>
+				  <div class="card-body">
+					<h5 class="card-title">Atualização de Dados</h5>
+					<p class="card-text">Informe aqui o array json para atualizar os dados da busca.</p>
+					
+					<textarea id="data" class="form-control" cols="40" rows="10">[
+	{
+		"productid":"P1", 
+	  "name": "Pilha Pilhamax",
+		"category": "Pilhas", 
+		"brand": "Duramax",
+		"keywords": "pilha,duramax,energia",
+		"price": 11.5, 
+		"stock": 2, 
+		"sales_count": 2
+	},
+	{
+		"productid":"T1", 
+	  "name": "Teclado Turbo Teclamax",
+		"category": "Teclados", 
+		"brand": "Teclamax",
+		"keywords": "teclado,tecla",
+		"price": 12.12, 
+		"stock": 22, 
+		"sales_count": 3
+	},
+	{
+		"productid":"T2", 
+	  "name": "Teclado Tabajara Teclamax",
+		"category": "Teclados", 
+		"brand": "Teclamax",
+		"keywords": "teclado,tecla",
+		"price": 3.52, 
+		"stock": 2, 
+		"sales_count": 40
+	},
+	{
+		"productid":"T3", 
+	  "name": "Teclado Gamer Teclamax",
+		"category": "Teclados", 
+		"brand": "Teclamax",
+		"keywords": "teclado,tecla",
+		"price": 12.12, 
+		"stock": 1, 
+		"sales_count": 10
+	}
+]</textarea>
+				<button id="button-update" class="btn btn-default" type="button">Atualizar</button>
+					
+				  </div>
+				</div>
+				
+			</div>
+			<div class="col-12">
+				
+				<br>
+				
+				<div class="card">
+				  <div class="card-header showHideCardBody">
+					Filtro 
+					
+				  </div>
+				  <div class="card-body">
+					<h5 class="card-title">Filtro</h5>
+					
+					<input type="text" value="" placeholder="Pesquise aqui" id="q">
+			
+					Ordenação
+					<select id="sortField">
+						<option value="relevance">Relevancia</option>
+						<option value="price">Preço</option>
+						<option value="stock">Estoque</option>
+						<option value="sales_count">Vendas</option>
+					</select>
+					<select id="sortType">
+						<option>ASC</option>
+						<option>DESC</option>
+					</select>
+					
+					Pagina
+					<input type="numeric" value="1" id="page">
+					
+					Limite
+					<input type="numeric" value="4" id="limit">
+					
+					<button id="button-exec" class="btn btn-default" type="button">Executar</button>
+					
+					<table id="tb1" class="table">
+					<thead>
+						<tr>
+							<td>Id do Produto</td>
+							<td>Nome</td>
+							<td>Categoria</td>
+							<td>Marca</td>
+							<td>Keywords</td>
+							<td>Preço</td>
+							<td>Estoque</td>
+							<td>Vendas</td>
+						</tr>
+					</thead>
+					<tbody></tbody>
+					</table>
+					
+				  </div>
+				</div>
+				
+			</div>
+		</div>
+		
+	</div>
+	
+  </body>
+</html>
