@@ -1,17 +1,19 @@
 # search-engine
 
-Sistema de busca em NodeJS
+Serviço de busca em NodeJS
 
 ## Serviços
-POST /update/ Atualiza os dados usados na busca
-GET /search/ Executa uma busca nos dados e retorna o resultado
+
+- POST /update/ Atualiza os dados usados na busca
+- GET /search/ Executa uma busca nos dados e retorna o resultado
 
 ## Exemplos
 
+```javascript
 Request
 POST /update/
 Body
-```javascript
+
 [
 	{
 		"productid":"P1", 
@@ -54,12 +56,13 @@ Body
 		"sales_count": 10
 	}
 ] 
-```
 
 Response
 Status: 200
 Body: none
+```
 
+```javascript
 Request
 GET /search/?q=Termo de Busca&sortField=price&sortType=desc
 Body: none
@@ -68,7 +71,6 @@ Response
 Status: 200
 Body
 
-```javascript
 [
   {
     "productid": "T1",

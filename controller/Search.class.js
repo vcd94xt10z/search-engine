@@ -106,9 +106,6 @@ Search.search = function(all){
 		}
 	}
 	
-	console.log("depois");
-	console.log(output2);
-	
 	return output2;
 }
 
